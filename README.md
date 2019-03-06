@@ -6,10 +6,10 @@
     修改config目录下conf.ini文件内容，配置字典数据库信息，改配置文件为默认使用配置，使用时可通过 -conf 自定义配置文件路径
 #### 命令
     windows:(例)
-    weakpass.exe -host 10.10.10.111 -proto ssh -p 50 -conf config/conf.ini
+    weakpass.exe -host 10.10.10.111 -proto ssh -p 50 -conf ../config/conf.ini
     
     linux:(例)
-    ./weakpass -host 10.10.10.111 -proto ssh -p 50 -conf config/conf.ini
+    ./weakpass -host 10.10.10.111 -proto ssh -p 50 -conf ../config/conf.ini
 ##### 参数说明：
     -host   指定检测主机地址
     -proto  指定检测服务协议
