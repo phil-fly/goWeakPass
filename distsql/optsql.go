@@ -63,7 +63,7 @@ func getinfo(id int) *Userdist {
 }
 
 
-//
+//连接数据库加载字典
 func Sqlinit(user,pass,host,dbname string) {
 	var err error
 	x, err = xorm.NewEngine("mysql", user+":"+pass+"@tcp("+host+":3306)/"+dbname+"?charset=utf8")
@@ -73,15 +73,19 @@ func Sqlinit(user,pass,host,dbname string) {
 	if err := x.Sync(new(Userdist)); err != nil {
 		log.Fatal("数据表同步失败:", err)
 	}
+
+	Userlist = getUserList()
+	Passlist = getPassList()
 }
 
 //遍历
-func GetUserList() (as []Userdist){
+func getUserList() (as []Userdist){
 	x.Distinct("username").Find(&as)
 	return
 }
 
-func GetPassList() (as []Passdist){
+func getPassList() (as []Passdist){
 	x.Distinct("password").Find(&as)
 	return
 }
+

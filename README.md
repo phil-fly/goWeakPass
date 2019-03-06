@@ -1,6 +1,6 @@
 # goWeakPass
 ## 项目简介
-    使用golang编写的ftp/telnet/ssh 等服务弱口令检测
+    使用golang编写的ftp/telnet/ssh/mysql 等服务弱口令检测,可指定并发检测线程数量
 ## 使用方式
 ### 配置文件
     修改config目录下conf.ini文件内容，配置字典数据库信息，改配置文件为默认使用配置，使用时可通过 -conf 自定义配置文件路径

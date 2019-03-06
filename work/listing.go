@@ -19,19 +19,43 @@ const (
 
 var wg sync.WaitGroup
 var host string
-func Task(proto string,tasknum int,hostaddr string){
+
+var userlist []distsql.Userdist
+var passlist []distsql.Passdist
+
+func Taskinit(file string){
+	//加载配置
+	GetConf(file)
+	if MysqlConf.Enabled == true {
+		distsql.Sqlinit(MysqlConf.Username,MysqlConf.Password,MysqlConf.Host,MysqlConf.Dbname)
+		userlist = distsql.Userlist
+		passlist = distsql.Passlist
+
+	}
+
+}
+
+
+func Taskrun(proto string,tasknum int,hostaddr string){
 	host = hostaddr
 	tasks := make(chan Workdist,taskload)
 	wg.Add(tasknum)
+
 	for gr:=1;gr<=tasknum;gr++ {
-		if proto == "ssh" {
-			go	sshWorker(tasks)
-		}else if proto == "telnet" {
-			go	telnetWorker(tasks)
-		}else if proto == "ftp" {
-			go	ftpWorker(tasks)
+		switch {
+			case proto == "ssh" :
+				go	sshWorker(tasks)
+			case proto == "telnet":
+				go	telnetWorker(tasks)
+			case proto == "ftp":
+				go	ftpWorker(tasks)
+			case proto == "mysql":
+				go	mysqlWorker(tasks)
+			default:
+				return
 		}
 	}
+
 	for _,U := range distsql.Userlist {
 		for _,P := range distsql.Passlist {
 			task := Workdist{
@@ -54,6 +78,7 @@ func sshWorker(tasks chan Workdist){
 			//log.Print("通道关闭")
 			return
 		}
+		log.Print("检测ssh服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
 		_,err:= tool.SshConnect(task.Username,task.Password,host,22)
 		if err == nil{
 			log.Print("检测到ssh服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
@@ -96,3 +121,19 @@ func ftpWorker(tasks chan Workdist){
 	}
 }
 
+func mysqlWorker(tasks chan Workdist){
+	defer wg.Done()
+	for{
+		task,ok := <- tasks
+		if !ok {
+			//log.Print("通道关闭")
+			return
+		}
+		log.Print("正在检测mysql服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
+		ret:= tool.Loginmysql(host,task.Username,task.Password)
+		if ret == "ok"{
+			log.Print("检测到mysql服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
+			os.Exit(1)
+		}
+	}
+}
