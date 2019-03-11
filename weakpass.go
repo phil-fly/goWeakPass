@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"./work"
+	"log"
 )
 
 
@@ -19,4 +20,5 @@ func main() {
 
 	work.Taskinit(*confpath)
 	work.Taskrun(*proto,*tasknum,*hostaddr)
+	log.Print("未检测到该服务弱口令，请再次检查确认或补充字典！")
 }

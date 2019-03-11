@@ -25,7 +25,7 @@ func SshConnect(user, password, host string, port int) (string, error) {
   clientConfig = &ssh.ClientConfig{
     User:    user,
     Auth:    auth,
-    Timeout: 3 * time.Second,
+    Timeout: 6 * time.Second,
     HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
             return nil
         },

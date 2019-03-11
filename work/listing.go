@@ -6,6 +6,8 @@ import (
 	"goWeakPass/tool"
 	"log"
 	"os"
+	"net"
+	"strconv"
 )
 
 type Workdist struct {
@@ -34,7 +36,19 @@ func Taskinit(file string){
 	}
 
 }
+func checkError(err error) {
+	if err != nil {
+		log.Print("检测到主机没有开启该服务，检查退出！")
+		os.Exit(1)
+	}
+}
 
+func checkup(hostaddr string,port int){
+	address := hostaddr + ":" + strconv.Itoa(port)
+	conn, err := net.Dial("tcp", address)
+	checkError(err)
+	conn.Close()
+}
 
 func Taskrun(proto string,tasknum int,hostaddr string){
 	host = hostaddr
@@ -44,12 +58,16 @@ func Taskrun(proto string,tasknum int,hostaddr string){
 	for gr:=1;gr<=tasknum;gr++ {
 		switch {
 			case proto == "ssh" :
+				checkup(host,22)
 				go	sshWorker(tasks)
 			case proto == "telnet":
+				checkup(host,23)
 				go	telnetWorker(tasks)
 			case proto == "ftp":
+				checkup(host,21)
 				go	ftpWorker(tasks)
 			case proto == "mysql":
+				checkup(host,3306)
 				go	mysqlWorker(tasks)
 			default:
 				return
@@ -129,7 +147,6 @@ func mysqlWorker(tasks chan Workdist){
 			//log.Print("通道关闭")
 			return
 		}
-		log.Print("正在检测mysql服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
 		ret:= tool.Loginmysql(host,task.Username,task.Password)
 		if ret == "ok"{
 			log.Print("检测到mysql服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
