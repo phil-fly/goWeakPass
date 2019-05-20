@@ -6,6 +6,7 @@ import (
 	"time"
 	"fmt"
 	"strings"
+	"strconv"
 )
 
 type TelnetClient struct {
@@ -18,10 +19,10 @@ type TelnetClient struct {
 
 
 
-func Telnet_Creat(host string,usr string,pass string)  (bool , error) {
+func Telnet_Creat(host string,usr string,pass string,port int)  (bool , error) {
 	telnetClientObj := new(TelnetClient)
 	telnetClientObj.IP = host
-	telnetClientObj.Port = "23"
+	telnetClientObj.Port = strconv.Itoa(port)
 	telnetClientObj.IsAuthentication = true
 	telnetClientObj.UserName = usr
 	telnetClientObj.Password = pass

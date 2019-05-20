@@ -1,9 +1,9 @@
 package distsql
 
 import (
-	"github.com/go-xorm/xorm"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
+	"database/sql"
 )
 
 type Userdist struct {
@@ -21,71 +21,54 @@ var Userlist  []Userdist
 var Passlist  []Passdist
 
 //定义orm引擎
-var x *xorm.Engine
+var db *sql.DB
 
-//增
-func Insert(name string) (int64, bool) {
-	user := new(Userdist)
-	user.Username = name
-	affected, err := x.Insert(user)
-	if err != nil {
-		return affected, false
-	}
-	return affected, true
-}
-
-
-
-func Del(id int64) {
-	user := new(Userdist)
-	x.Id(id).Delete(user)
-}
-
-//改
-func update(id int64, user *Userdist) bool {
-	affected, err := x.ID(id).Update(user)
-	if err != nil {
-		log.Fatal("错误:", err)
-	}
-	if affected == 0 {
-		return false
-	}
-	return true
-}
 //查
-func getinfo(id int) *Userdist {
-	user := &Userdist{Id: id}
-	is, _ := x.Get(user)
-	if !is {
-		log.Fatal("搜索结果不存在!")
+func getUserdist(dbtable string) []Userdist {
+	var node Userdist
+	rows, err := db.Query("select username  from ?  where 1",dbtable);
+	if err != nil {
+		log.Fatal(err)
 	}
-	return user
+
+	for rows.Next() {
+		//获取请求的方法
+		rows.Scan(&node.Username);
+		entrypoint := Userdist{Username: node.Username}
+		Userlist = append(Userlist, entrypoint)
+	}
+	return Userlist
+}
+
+//查
+func getPassdist(dbtable string) []Passdist {
+	var node Passdist
+	rows, err := db.Query("select password  from ?  where 1",dbtable);
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for rows.Next() {
+		//获取请求的方法d
+		rows.Scan(&node.Password);
+		entrypoint := Userdist{Username: node.Password}
+		Userlist = append(Userlist, entrypoint)
+	}
+	return Passlist
 }
 
 
 //连接数据库加载字典
-func Sqlinit(user,pass,host,dbname string) {
-	var err error
-	x, err = xorm.NewEngine("mysql", user+":"+pass+"@tcp("+host+":3306)/"+dbname+"?charset=utf8")
+func Sqlinit(user,pass,host,Dbport,dbname,userdist,passdist string) {
+	db, err := sql.Open("mysql",
+		user+":"+ pass +"@tcp("+ host +":"+Dbport+")/"+dbname+"?charset=utf8")
 	if err != nil {
-		log.Fatal("数据库连接失败:", err)
+		log.Fatal(err)
+		return
 	}
-	if err := x.Sync(new(Userdist)); err != nil {
-		log.Fatal("数据表同步失败:", err)
-	}
+	defer db.Close()
 
-	Userlist = getUserList()
-	Passlist = getPassList()
+
+	Userlist = getUserdist(userdist)
+	Passlist = getPassdist(passdist)
 }
-
-//遍历
-func getUserList() (as []Userdist){
-	x.Distinct("username").Find(&as)
-	return
-}
-
-func getPassList() (as []Passdist){
-	x.Distinct("password").Find(&as)
-	return
-}
-

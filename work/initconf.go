@@ -9,9 +9,12 @@ import (
 type MysqlConfStu struct {
 	Enabled bool
 	Host	string
+	Dbport	string
 	Username    string
 	Password    string
 	Dbname		string
+	Userdist	string
+	Passdist	string
 }
 
 type FileConfStu struct {
@@ -29,9 +32,12 @@ func GetConf(confPath string){
 		Mysqldist struct {
 			Enabled bool
 			Host	string
+			Dbport	string
 			Username    string
 			Password    string
 			Dbname		string
+			Userdist	string
+			Passdist	string
 		};
 		Filedist struct {
 			Enabled bool
