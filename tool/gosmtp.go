@@ -8,16 +8,16 @@ import (
 func Checksmtp(host,username,password  string,smtpport int) error {
 
 	mailTo := []string {
-		username,//实验邮件接收人为自己本身，"712127467@qq.com",
+		username,//实验邮件接收人为自己本身
 	}
-	//邮件主题为"Hello"
+
 	subject := "弱口令测试"
 	// 邮件正文
 	body := ""
 
 	mailConn := map[string]string {
-		"user": username,//"623746467@qq.com",
-		"pass": password,//"qweqwe",//"rvohgalxjdiibfei",
+		"user": username,
+		"pass": password,
 		"host": host,//"smtp.qq.com",
 		"port": strconv.Itoa(smtpport),//"465",
 	}
