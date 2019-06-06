@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"./work"
+	"goWeakPass/work"
 	"log"
 )
 
@@ -16,7 +16,7 @@ var confpath = flag.String("conf", "../config/conf.ini", "Weak password detectio
 
 func main() {
 	//获取命令行参数
-	//  main.exe -host 192.168.0.92 -proto ssh -port 22 -p 50 -conf  confpath/conf.ini
+	//weakpass.exe -host 10.10.10.111 -proto ssh -port 22 -p 50 -conf ../config/conf.ini
 	flag.Parse()
 
 	work.Taskinit(*confpath)
