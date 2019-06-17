@@ -4,16 +4,17 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"database/sql"
+	"fmt"
 )
 
 type Userdist struct {
-	Id       int       `xorm:"INT(20) 'id'"`
-	Username string    `xorm:"VARCHAR(64) 'username'"`
+	Id       int
+	Username string
 }
 
 type Passdist struct {
-	Id       int       `xorm:"INT(20) 'id'"`
-	Password string    `xorm:"VARCHAR(64) 'password'"`
+	Id       int
+	Password string
 }
 
 //定义字典内存存储
@@ -24,9 +25,10 @@ var Passlist  []Passdist
 var db *sql.DB
 
 //查
-func getUserdist(dbtable string) []Userdist {
+func getUserdist(db *sql.DB,dbtable string) []Userdist {
 	var node Userdist
-	rows, err := db.Query("select username  from ?  where 1",dbtable);
+	sqlqyery := fmt.Sprintf("select username  from  %s  where 1", dbtable)
+	rows, err := db.Query(sqlqyery);
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,9 +43,10 @@ func getUserdist(dbtable string) []Userdist {
 }
 
 //查
-func getPassdist(dbtable string) []Passdist {
+func getPassdist(db *sql.DB,dbtable string) []Passdist {
 	var node Passdist
-	rows, err := db.Query("select password  from ?  where 1",dbtable);
+	sqlqyery := fmt.Sprintf("select password  from  %s  where 1", dbtable)
+	rows, err := db.Query(sqlqyery);
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,24 +54,25 @@ func getPassdist(dbtable string) []Passdist {
 	for rows.Next() {
 		//获取请求的方法d
 		rows.Scan(&node.Password);
-		entrypoint := Userdist{Username: node.Password}
-		Userlist = append(Userlist, entrypoint)
+		entrypoint := Passdist{Password: node.Password}
+		Passlist = append(Passlist, entrypoint)
 	}
 	return Passlist
 }
 
 
 //连接数据库加载字典
-func Sqlinit(user,pass,host,Dbport,dbname,userdist,passdist string) {
+func DistGet(user,pass,host,Dbport,dbname,userdist,passdist string) ([]Userdist,[]Passdist){
 	db, err := sql.Open("mysql",
 		user+":"+ pass +"@tcp("+ host +":"+Dbport+")/"+dbname+"?charset=utf8")
 	if err != nil {
 		log.Fatal(err)
-		return
+		return nil,nil
 	}
 	defer db.Close()
 
 
-	Userlist = getUserdist(userdist)
-	Passlist = getPassdist(passdist)
+	Userlist = getUserdist(db,userdist)
+	Passlist = getPassdist(db,passdist)
+	return Userlist,Passlist
 }

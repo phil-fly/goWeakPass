@@ -30,10 +30,7 @@ func Taskinit(file string){
 	//加载配置
 	GetConf(file)
 	if MysqlConf.Enabled == true {
-		distsql.Sqlinit(MysqlConf.Username,MysqlConf.Password,MysqlConf.Host,MysqlConf.Dbport,MysqlConf.Dbname,MysqlConf.Userdist,MysqlConf.Passdist)
-		userlist = distsql.Userlist
-		passlist = distsql.Passlist
-
+		userlist,passlist = distsql.DistGet(MysqlConf.Username,MysqlConf.Password,MysqlConf.Host,MysqlConf.Dbport,MysqlConf.Dbname,MysqlConf.Userdist,MysqlConf.Passdist)
 	}
 
 }
@@ -78,8 +75,9 @@ func Taskrun(proto string,tasknum int,hostaddr,port string){
 		}
 	}
 	intport,_ :=  strconv.Atoi(port)
-	for _,U := range distsql.Userlist {
-		for _,P := range distsql.Passlist {
+	for _,U := range userlist {
+		for _,P := range passlist {
+
 			task := Workdist{
 				Username:U.Username,
 				Password:P.Password,
