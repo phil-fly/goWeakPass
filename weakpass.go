@@ -15,8 +15,6 @@ var tasknum = flag.Int("p", 1, "Weak password detection Number of threads")
 var confpath = flag.String("conf", "../config/conf.ini", "Weak password detection confpath")
 
 func main() {
-	//获取命令行参数
-	//weakpass.exe -host 10.10.10.111 -proto ssh -port 22 -p 50 -conf ../config/conf.ini
 	flag.Parse()
 
 	work.Taskinit(*confpath)
