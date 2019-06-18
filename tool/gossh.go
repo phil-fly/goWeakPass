@@ -17,6 +17,7 @@ func SshConnect(user, password, host string, port int) (string, error) {
     client       *ssh.Client
     session      *ssh.Session
     err          error
+
   )
   // get auth method
   auth = make([]ssh.AuthMethod, 0)
@@ -26,6 +27,10 @@ func SshConnect(user, password, host string, port int) (string, error) {
     User:    user,
     Auth:    auth,
     Timeout: 6 * time.Second,
+    //2019.6.18  golang默认配置加密方式不包括aes128-cbc  连接交换机需要使用aes128-cbc
+    Config: ssh.Config{
+      Ciphers: []string{"aes128-cbc"},
+    },
     HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
             return nil
         },
