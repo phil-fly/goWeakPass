@@ -1,12 +1,12 @@
 package tool
 
 import (
+	"fmt"
 	"log"
 	"net"
-	"time"
-	"fmt"
-	"strings"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type TelnetClient struct {
@@ -17,36 +17,32 @@ type TelnetClient struct {
 	Password         string
 }
 
-
-
-func Telnet_Creat(host string,usr string,pass string,port int)  (bool , error) {
+func Telnet_Creat(host string, usr string, pass string, port int) (bool, error) {
 	telnetClientObj := new(TelnetClient)
 	telnetClientObj.IP = host
 	telnetClientObj.Port = strconv.Itoa(port)
 	telnetClientObj.IsAuthentication = true
 	telnetClientObj.UserName = usr
 	telnetClientObj.Password = pass
-	ret,err :=telnetClientObj.Telnet(30)
+	ret, err := telnetClientObj.Telnet(30)
 
-	return ret,err
+	return ret, err
 }
 
-
-func (this *TelnetClient) Telnet(timeout int) (bool  ,error) {
+func (this *TelnetClient) Telnet(timeout int) (bool, error) {
 	raddr := this.IP + ":" + this.Port
 	conn, err := net.DialTimeout("tcp", raddr, time.Duration(timeout)*time.Second)
 	if nil != err {
 		log.Print("pkg: model, func: Telnet, method: net.DialTimeout, errInfo:", err)
-		return false,err
+		return false, err
 	}
 	defer conn.Close()
 	if false == this.telnetProtocolHandshake(conn) {
 		//log.Print("pkg: model, func: Telnet, method: this.telnetProtocolHandshake, errInfo: telnet protocol handshake failed!!!")
-		return false,err
+		return false, err
 	}
-	return true,err
+	return true, err
 }
-
 
 func (this *TelnetClient) telnetProtocolHandshake(conn net.Conn) bool {
 	var buf [4096]byte
@@ -107,7 +103,7 @@ func (this *TelnetClient) telnetProtocolHandshake(conn net.Conn) bool {
 		return false
 	}
 
-	n, err = conn.Write([]byte(this.Password+ "\r\n"))
+	n, err = conn.Write([]byte(this.Password + "\r\n"))
 	if nil != err {
 		log.Print("pkg: model, func: telnetProtocolHandshake8, method: conn.Write, errInfo:", err)
 		return false
@@ -136,6 +132,6 @@ func (this *TelnetClient) telnetProtocolHandshake(conn net.Conn) bool {
 		log.Print("pkg: model, func: telnetProtocolHandshake7, method: conn.Read, errInfo:", err)
 		return false
 	}
-	fmt.Print(n);
+	fmt.Print(n)
 	return true
 }

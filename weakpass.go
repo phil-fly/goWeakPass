@@ -6,8 +6,6 @@ import (
 	"log"
 )
 
-
-
 var proto = flag.String("proto", "null", "Weak password detection protos (ssh/telnet)")
 var hostaddr = flag.String("host", "null", "Weak password detection hostaddr")
 var port = flag.String("port", "null", "Weak password detection port")
@@ -18,6 +16,6 @@ func main() {
 	flag.Parse()
 
 	work.Taskinit(*confpath)
-	work.Taskrun(*proto,*tasknum,*hostaddr,*port)
+	work.Taskrun(*proto, *tasknum, *hostaddr, *port)
 	log.Print("未检测到该服务弱口令，请再次检查确认或补充字典！")
 }

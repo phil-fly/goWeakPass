@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func LoginFtp(host,username,password string,port int ) string {
+func LoginFtp(host, username, password string, port int) string {
 
 	ftp := new(ftp.FTP)
 	ftp.Debug = true
@@ -18,10 +18,3 @@ func LoginFtp(host,username,password string,port int ) string {
 	ftp.Quit()
 	return "230"
 }
-
-
-
-
-
-
-

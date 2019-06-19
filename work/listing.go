@@ -1,23 +1,23 @@
 package work
 
 import (
-	"sync"
 	"goWeakPass/distsql"
 	"goWeakPass/tool"
 	"log"
-	"os"
 	"net"
+	"os"
 	"strconv"
+	"sync"
 )
 
 type Workdist struct {
-	Username	string
-	Password 	string
-	Port		int
+	Username string
+	Password string
+	Port     int
 }
 
 const (
-	taskload		    = 100
+	taskload = 100
 )
 
 var wg sync.WaitGroup
@@ -26,11 +26,11 @@ var host string
 var userlist []distsql.Userdist
 var passlist []distsql.Passdist
 
-func Taskinit(file string){
+func Taskinit(file string) {
 	//加载配置
 	GetConf(file)
 	if MysqlConf.Enabled == true {
-		userlist,passlist = distsql.DistGet(MysqlConf.Username,MysqlConf.Password,MysqlConf.Host,MysqlConf.Dbport,MysqlConf.Dbname,MysqlConf.Userdist,MysqlConf.Passdist)
+		userlist, passlist = distsql.DistGet(MysqlConf.Username, MysqlConf.Password, MysqlConf.Host, MysqlConf.Dbport, MysqlConf.Dbname, MysqlConf.Userdist, MysqlConf.Passdist)
 	}
 
 }
@@ -41,47 +41,47 @@ func checkError(err error) {
 	}
 }
 
-func checkup(hostaddr ,port string){
+func checkup(hostaddr, port string) {
 	address := hostaddr + ":" + port
 	conn, err := net.Dial("tcp", address)
 	checkError(err)
 	conn.Close()
 }
 
-func Taskrun(proto string,tasknum int,hostaddr,port string){
+func Taskrun(proto string, tasknum int, hostaddr, port string) {
 	host = hostaddr
-	tasks := make(chan Workdist,taskload)
+	tasks := make(chan Workdist, taskload)
 	wg.Add(tasknum)
 
-	for gr:=1;gr<=tasknum;gr++ {
+	for gr := 1; gr <= tasknum; gr++ {
 		switch {
-			case proto == "ssh" :
-				checkup(host,port)
-				go	sshWorker(tasks)
-			case proto == "telnet":
-				checkup(host,port)
-				go	telnetWorker(tasks)
-			case proto == "ftp":
-				checkup(host,port)
-				go	ftpWorker(tasks)
-			case proto == "mysql":
-				checkup(host,port)
-				go	mysqlWorker(tasks)
-			case proto == "smtp":
-				checkup(host,port)
-				go	smtpWorker(tasks)
-			default:
-				return
+		case proto == "ssh":
+			checkup(host, port)
+			go sshWorker(tasks)
+		case proto == "telnet":
+			checkup(host, port)
+			go telnetWorker(tasks)
+		case proto == "ftp":
+			checkup(host, port)
+			go ftpWorker(tasks)
+		case proto == "mysql":
+			checkup(host, port)
+			go mysqlWorker(tasks)
+		case proto == "smtp":
+			checkup(host, port)
+			go smtpWorker(tasks)
+		default:
+			return
 		}
 	}
-	intport,_ :=  strconv.Atoi(port)
-	for _,U := range userlist {
-		for _,P := range passlist {
+	intport, _ := strconv.Atoi(port)
+	for _, U := range userlist {
+		for _, P := range passlist {
 
 			task := Workdist{
-				Username:U.Username,
-				Password:P.Password,
-				Port:intport,
+				Username: U.Username,
+				Password: P.Password,
+				Port:     intport,
 			}
 			tasks <- task
 		}
@@ -90,87 +90,85 @@ func Taskrun(proto string,tasknum int,hostaddr,port string){
 	wg.Wait()
 }
 
-func sshWorker(tasks chan Workdist){
+func sshWorker(tasks chan Workdist) {
 	defer wg.Done()
 
-	for{
-		task,ok := <- tasks
+	for {
+		task, ok := <-tasks
 		if !ok {
 			//log.Print("通道关闭")
 			return
 		}
-		log.Print("检测ssh服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
-		_,err:= tool.SshConnect(task.Username,task.Password,host,task.Port)
-		if err == nil{
-			log.Print("检测到ssh服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
+		log.Print("检测ssh服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
+		_, err := tool.SshConnect(task.Username, task.Password, host, task.Port)
+		if err == nil {
+			log.Print("检测到ssh服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
 			os.Exit(1)
 		}
 	}
 
 }
 
-
-func telnetWorker(tasks chan Workdist){
+func telnetWorker(tasks chan Workdist) {
 	defer wg.Done()
-	for{
-		task,ok := <- tasks
+	for {
+		task, ok := <-tasks
 		if !ok {
 			//log.Print("通道关闭")
 			return
 		}
-		ret,_:= tool.Telnet_Creat(host,task.Username,task.Password,task.Port)
-		if ret == true{
-			log.Print("检测到telnet服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
+		ret, _ := tool.Telnet_Creat(host, task.Username, task.Password, task.Port)
+		if ret == true {
+			log.Print("检测到telnet服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
 			os.Exit(1)
 		}
 	}
 }
 
-func ftpWorker(tasks chan Workdist){
+func ftpWorker(tasks chan Workdist) {
 	defer wg.Done()
-	for{
-		task,ok := <- tasks
+	for {
+		task, ok := <-tasks
 		if !ok {
 			//log.Print("通道关闭")
 			return
 		}
-		ret:= tool.LoginFtp(host,task.Username,task.Password,task.Port)
-		if ret == "230"{
-			log.Print("检测到ftp服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
+		ret := tool.LoginFtp(host, task.Username, task.Password, task.Port)
+		if ret == "230" {
+			log.Print("检测到ftp服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
 			os.Exit(1)
 		}
 	}
 }
 
-func mysqlWorker(tasks chan Workdist){
+func mysqlWorker(tasks chan Workdist) {
 	defer wg.Done()
-	for{
-		task,ok := <- tasks
+	for {
+		task, ok := <-tasks
 		if !ok {
 			//log.Print("通道关闭")
 			return
 		}
-		ret:= tool.Loginmysql(host,task.Username,task.Password,task.Port)
-		if ret == "ok"{
-			log.Print("检测到mysql服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
+		ret := tool.Loginmysql(host, task.Username, task.Password, task.Port)
+		if ret == "ok" {
+			log.Print("检测到mysql服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
 			os.Exit(1)
 		}
 	}
 }
-
 
 //暂不支持ssl
-func smtpWorker(tasks chan Workdist){
+func smtpWorker(tasks chan Workdist) {
 	defer wg.Done()
-	for{
-		task,ok := <- tasks
+	for {
+		task, ok := <-tasks
 		if !ok {
 			//log.Print("通道关闭")
 			return
 		}
-		err := tool.Checksmtp(host,task.Username,task.Password,task.Port)
+		err := tool.Checksmtp(host, task.Username, task.Password, task.Port)
 		if err == nil {
-			log.Print("检测到smtp 服务弱口令：    用户名: ",task.Username,"   密码: ",task.Password)
+			log.Print("检测到smtp 服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
 			os.Exit(1)
 		}
 	}
