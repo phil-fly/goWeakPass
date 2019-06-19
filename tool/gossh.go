@@ -7,6 +7,7 @@ import (
   "golang.org/x/crypto/ssh"
   "net"
 	_ "github.com/go-sql-driver/mysql"
+  "log"
 )
 
 func SshConnect(user, password, host string, port int) (string, error) {
@@ -40,11 +41,13 @@ func SshConnect(user, password, host string, port int) (string, error) {
   addr = fmt.Sprintf("%s:%d", host, port)
 
   if client, err = ssh.Dial("tcp", addr, clientConfig); err != nil {
+    log.Print("用户名：",user,"    密码: ",password ,"      ",err.Error())
     return "", err
   }
 
   // create session
   if session, err = client.NewSession(); err != nil {
+    log.Print("用户名：",user,"    密码: ",password ,"      ",err.Error())
     return "", err
   }
   session.Close()
