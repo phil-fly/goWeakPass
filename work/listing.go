@@ -1,7 +1,6 @@
 package work
 
 import (
-	"goWeakPass/distsql"
 	"goWeakPass/tool"
 	"log"
 	"net"
@@ -23,14 +22,12 @@ const (
 var wg sync.WaitGroup
 var host string
 
-var userlist []distsql.Userdist
-var passlist []distsql.Passdist
 
 func Taskinit(file string) {
 	//加载配置
 	GetConf(file)
 	if MysqlConf.Enabled == true {
-		userlist, passlist = distsql.DistGet(MysqlConf.Username, MysqlConf.Password, MysqlConf.Host, MysqlConf.Dbport, MysqlConf.Dbname, MysqlConf.Userdist, MysqlConf.Passdist)
+
 	}
 
 }
@@ -75,17 +72,34 @@ func Taskrun(proto string, tasknum int, hostaddr, port string) {
 		}
 	}
 	intport, _ := strconv.Atoi(port)
-	for _, U := range userlist {
-		for _, P := range passlist {
+	if MysqlConf.Enabled {
+		for _, U := range userlist_sql {
+			for _, P := range passlist_sql {
 
-			task := Workdist{
-				Username: U.Username,
-				Password: P.Password,
-				Port:     intport,
+				task := Workdist{
+					Username: U.Username,
+					Password: P.Password,
+					Port:     intport,
+				}
+				tasks <- task
 			}
-			tasks <- task
 		}
 	}
+
+	if FileConf.Enabled {
+		for _, U := range userlist_file {
+			for _, P := range passlist_file {
+
+				task := Workdist{
+					Username: U.Username,
+					Password: P.Password,
+					Port:     intport,
+				}
+				tasks <- task
+			}
+		}
+	}
+
 	close(tasks)
 	wg.Wait()
 }

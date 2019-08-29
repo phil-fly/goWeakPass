@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"gopkg.in/gcfg.v1"
 	"log"
+	"goWeakPass/distsql"
+	"goWeakPass/distfile"
 )
 
 type MysqlConfStu struct {
@@ -19,13 +21,17 @@ type MysqlConfStu struct {
 
 type FileConfStu struct {
 	Enabled  bool
-	Path     string
 	Userfile string
 	Passfile string
 }
 
 var MysqlConf MysqlConfStu
 var FileConf FileConfStu
+var userlist_sql []distsql.Userdist
+var passlist_sql []distsql.Passdist
+
+var userlist_file []distfile.Userdist
+var passlist_file []distfile.Passdist
 
 func GetConf(confPath string) {
 	config := struct {
@@ -41,7 +47,6 @@ func GetConf(confPath string) {
 		}
 		Filedist struct {
 			Enabled  bool
-			Path     string
 			Userfile string
 			Passfile string
 		}
@@ -52,10 +57,15 @@ func GetConf(confPath string) {
 	}
 	MysqlConf = config.Mysqldist
 	FileConf = config.Filedist
-	log.Print("数据库配置开启状态：", MysqlConf.Enabled)
-	log.Print("数据库连接地址：", MysqlConf.Host)
-	log.Print("数据库名：", MysqlConf.Dbname)
-	log.Print("数据库账户：", MysqlConf.Username)
-	log.Print("数据库密码：", MysqlConf.Password)
+	if MysqlConf.Enabled {
+		log.Print("加载MYSQL字典:", MysqlConf.Enabled)
+		userlist_sql, passlist_sql = distsql.SqlDistGet(MysqlConf.Username, MysqlConf.Password, MysqlConf.Host, MysqlConf.Dbport, MysqlConf.Dbname, MysqlConf.Userdist, MysqlConf.Passdist)
+		log.Print("读取mysql字典加载完成", MysqlConf.Enabled)
+	}
+
+	if FileConf.Enabled {
+		log.Print("加载文件字典:", FileConf.Enabled)
+		userlist_file, passlist_file = distfile.FlieDist_Get(FileConf.Userfile,FileConf.Passfile)
+	}
 
 }

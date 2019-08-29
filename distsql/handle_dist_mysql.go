@@ -61,7 +61,7 @@ func getPassdist(db *sql.DB, dbtable string) []Passdist {
 }
 
 //连接数据库加载字典
-func DistGet(user, pass, host, Dbport, dbname, userdist, passdist string) ([]Userdist, []Passdist) {
+func SqlDistGet(user, pass, host, Dbport, dbname, userdist, passdist string) ([]Userdist, []Passdist) {
 	db, err := sql.Open("mysql",
 		user+":"+pass+"@tcp("+host+":"+Dbport+")/"+dbname+"?charset=utf8")
 	if err != nil {
