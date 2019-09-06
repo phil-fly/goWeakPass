@@ -1,7 +1,6 @@
 package tool
 
 import (
-
 	"github.com/stacktitan/smb/smb"
 	"log"
 )
@@ -19,9 +18,9 @@ func SmbConnect(user, password, host string, port int) (string, error) {
 	if err == nil {
 		session.Close()
 		if session.IsAuthenticated {
-			return "true",nil
+			return "true", nil
 		}
 	}
 	log.Print("用户名：", user, "    密码: ", password, "      ", "false")
-	return "false",nil
+	return "false", nil
 }

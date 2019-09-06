@@ -21,7 +21,7 @@ func main() {
 	log.Print("未检测到该服务弱口令，请再次检查确认或补充字典！")
 }
 
-func check(){
+func check() {
 	if *proto == "" {
 		log.Print("请使用 -proto 指定协议名")
 		os.Exit(1)

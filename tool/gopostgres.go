@@ -3,15 +3,19 @@ package tool
 import (
 	"database/sql"
 	"fmt"
-	//_ "github.com/denisenkom/go-mssqldb"
+	_ "github.com/lib/pq"
 	"log"
 )
 
-func Loginmssql(host, username, password string, port int) string {
+func LoginPostgres(host, username, password string, port int) string {
 
-	dataSourceName := fmt.Sprintf("server=%v;port=%v;user id=%v;password=%v;database=%v", host,
-		port, username, password, "master")
-	db, err := sql.Open("mssql", dataSourceName)
+	dataSourceName := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=%v", username,
+		password, host, port, "postgres", "disable")
+
+	//connStr := "postgres://pqgotest:password@localhost/pqgotest?sslmode=verify-full"
+	//db, err := sql.Open("postgres", connStr)
+
+	db, err := sql.Open("postgres", dataSourceName)
 	if err != nil {
 		log.Print("用户名：", username, "    密码: ", password, "      ", "false")
 		return "false"

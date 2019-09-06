@@ -7,11 +7,13 @@
 |:---|:---:|
 |1|ftp|
 |2|telnet|
-|3|ssh|
-|4|mysql|
-|5|smtp|
-|6|smb|
-|7|mssql|
+|3|sh|
+|4|Mysql|
+|5|Smtp|
+|6|Smb|
+|7|Mssql|
+|8|Postgres|
+
 
 ## 使用方式
 ### 配置文件

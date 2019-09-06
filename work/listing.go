@@ -22,7 +22,6 @@ const (
 var wg sync.WaitGroup
 var host string
 
-
 func Taskinit(file string) {
 	//加载配置
 	GetConf(file)
@@ -73,6 +72,10 @@ func Taskrun(proto string, tasknum int, hostaddr, port string) {
 		case proto == "mssql": // 1433
 			checkup(host, port)
 			go mssqlWorker(tasks)
+		case proto == "plugins":
+			checkup(host, port)
+			go PostgresWorker(tasks)
+
 		default:
 			return
 		}
@@ -192,6 +195,21 @@ func mssqlWorker(tasks chan Workdist) {
 	}
 }
 
+func PostgresWorker(tasks chan Workdist) {
+	defer wg.Done()
+	for {
+		task, ok := <-tasks
+		if !ok {
+			//log.Print("通道关闭")
+			return
+		}
+		ret := tool.LoginPostgres(host, task.Username, task.Password, task.Port)
+		if ret == "true" {
+			log.Print("检测到Postgres服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
+			os.Exit(1)
+		}
+	}
+}
 
 //暂不支持ssl
 func smtpWorker(tasks chan Workdist) {

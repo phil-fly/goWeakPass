@@ -2,10 +2,10 @@ package work
 
 import (
 	"fmt"
+	"goWeakPass/distfile"
+	"goWeakPass/distsql"
 	"gopkg.in/gcfg.v1"
 	"log"
-	"goWeakPass/distsql"
-	"goWeakPass/distfile"
 )
 
 type MysqlConfStu struct {
@@ -65,7 +65,7 @@ func GetConf(confPath string) {
 
 	if FileConf.Enabled {
 		log.Print("加载文件字典:", FileConf.Enabled)
-		userlist_file, passlist_file = distfile.FlieDist_Get(FileConf.Userfile,FileConf.Passfile)
+		userlist_file, passlist_file = distfile.FlieDist_Get(FileConf.Userfile, FileConf.Passfile)
 	}
 
 }
