@@ -70,6 +70,9 @@ func Taskrun(proto string, tasknum int, hostaddr, port string) {
 		case proto == "smb":
 			checkup(host, port)
 			go smbWorker(tasks)
+		case proto == "mssql": // 1433
+			checkup(host, port)
+			go mssqlWorker(tasks)
 		default:
 			return
 		}
@@ -173,6 +176,22 @@ func mysqlWorker(tasks chan Workdist) {
 		}
 	}
 }
+func mssqlWorker(tasks chan Workdist) {
+	defer wg.Done()
+	for {
+		task, ok := <-tasks
+		if !ok {
+			//log.Print("通道关闭")
+			return
+		}
+		ret := tool.Loginmssql(host, task.Username, task.Password, task.Port)
+		if ret == "true" {
+			log.Print("检测到mysql服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
+			os.Exit(1)
+		}
+	}
+}
+
 
 //暂不支持ssl
 func smtpWorker(tasks chan Workdist) {
