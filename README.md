@@ -11,7 +11,7 @@
 |4|mysql|
 |5|smtp|
 |6|smb|
-|6|mssql|
+|7|mssql|
 
 ## 使用方式
 ### 配置文件
