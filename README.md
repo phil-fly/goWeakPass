@@ -7,7 +7,7 @@
 |:---|:---:|
 |1|ftp|
 |2|telnet|
-|3|sh|
+|3|ssh|
 |4|Mysql|
 |5|Smtp|
 |6|Smb|
