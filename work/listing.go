@@ -67,6 +67,9 @@ func Taskrun(proto string, tasknum int, hostaddr, port string) {
 		case proto == "smtp":
 			checkup(host, port)
 			go smtpWorker(tasks)
+		case proto == "smb":
+			checkup(host, port)
+			go smbWorker(tasks)
 		default:
 			return
 		}
@@ -183,6 +186,24 @@ func smtpWorker(tasks chan Workdist) {
 		err := tool.Checksmtp(host, task.Username, task.Password, task.Port)
 		if err == nil {
 			log.Print("检测到smtp 服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
+			os.Exit(1)
+		}
+	}
+}
+
+//暂不支持ssl
+func smbWorker(tasks chan Workdist) {
+	defer wg.Done()
+	for {
+		task, ok := <-tasks
+		if !ok {
+			//log.Print("通道关闭")
+			return
+		}
+		log.Print("检测SMB服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
+		Ret, err := tool.SshConnect(task.Username, task.Password, host, task.Port)
+		if err == nil && Ret == "true" {
+			log.Print("检测到SMB服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
 			os.Exit(1)
 		}
 	}
