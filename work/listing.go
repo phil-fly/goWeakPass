@@ -75,7 +75,9 @@ func Taskrun(proto string, tasknum int, hostaddr, port string) {
 		case proto == "plugins":
 			checkup(host, port)
 			go PostgresWorker(tasks)
-
+		case proto == "hive":
+			checkup(host, port)
+			go HiveWorker(tasks)
 		default:
 			return
 		}
@@ -190,6 +192,22 @@ func mssqlWorker(tasks chan Workdist) {
 		ret := tool.Loginmssql(host, task.Username, task.Password, task.Port)
 		if ret == "true" {
 			log.Print("检测到mysql服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
+			os.Exit(1)
+		}
+	}
+}
+
+func HiveWorker(tasks chan Workdist) {
+	defer wg.Done()
+	for {
+		task, ok := <-tasks
+		if !ok {
+			//log.Print("通道关闭")
+			return
+		}
+		ret := tool.LoginHive(host, task.Username, task.Password, task.Port)
+		if ret == "true" {
+			log.Print("检测到Hive服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
 			os.Exit(1)
 		}
 	}

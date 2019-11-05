@@ -13,6 +13,7 @@
 |6|Smb|
 |7|Mssql|
 |8|Postgres|
+|9|Hive|
 
 
 ## 使用方式
