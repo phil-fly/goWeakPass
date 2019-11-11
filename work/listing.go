@@ -78,6 +78,9 @@ func Taskrun(proto string, tasknum int, hostaddr, port string) {
 		case proto == "hive":
 			checkup(host, port)
 			go HiveWorker(tasks)
+		case proto == "redis":
+			checkup(host, port)
+			go RedisWorker(tasks)
 		default:
 			return
 		}
@@ -256,10 +259,28 @@ func smbWorker(tasks chan Workdist) {
 			return
 		}
 		log.Print("检测SMB服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-		Ret, err := tool.SshConnect(task.Username, task.Password, host, task.Port)
+		Ret, err := tool.SmbConnect(task.Username, task.Password, host, task.Port)
 		if err == nil && Ret == "true" {
 			log.Print("检测到SMB服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
 			os.Exit(1)
 		}
 	}
 }
+
+func RedisWorker(tasks chan Workdist) {
+	defer wg.Done()
+	for {
+		task, ok := <-tasks
+		if !ok {
+			//log.Print("通道关闭")
+			return
+		}
+		log.Print("检测Redis服务弱口令：密码: ", task.Password)
+		Ret := tool.RedisConnect(task.Password, host, task.Port)
+		if Ret == "true" {
+			log.Print("检测到Redis服务弱口令:"," 密码: ", task.Password)
+			os.Exit(1)
+		}
+	}
+}
+

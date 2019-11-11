@@ -14,9 +14,25 @@
 |7|Mssql|
 |8|Postgres|
 |9|Hive|
+|10|Redis|
 
 
 ## 使用方式
+
+```
+[root@localhost goWeakPass]# ./goWeakPass -h
+Usage of ./goWeakPass:
+  -conf string
+    	Weak password detection confpath (default "conf.ini")
+  -host string
+    	Weak password detection hostaddr
+  -p int
+    	Weak password detection Number of threads (default 1)
+  -port string
+    	Weak password detection port
+  -proto string
+    	Weak password detection protos (ssh/telnet)
+```
 ### 配置文件
     修改config目录下conf.ini文件内容，配置字典数据库信息，改配置文件为默认使用配置，使用时可通过 -conf 自定义配置文件路径
 #### 命令
