@@ -13,6 +13,7 @@ type Workdist struct {
 	Username string
 	Password string
 	Port     int
+	Database string
 }
 
 const (
@@ -25,9 +26,6 @@ var host string
 func Taskinit(file string) {
 	//加载配置
 	GetConf(file)
-	if MysqlConf.Enabled == true {
-
-	}
 
 }
 func checkError(err error) {
@@ -44,7 +42,7 @@ func checkup(hostaddr, port string) {
 	conn.Close()
 }
 
-func Taskrun(proto string, tasknum int, hostaddr, port string) {
+func Taskrun(proto string, tasknum int, hostaddr, port ,database string) {
 	host = hostaddr
 	tasks := make(chan Workdist, taskload)
 	wg.Add(tasknum)
@@ -81,6 +79,9 @@ func Taskrun(proto string, tasknum int, hostaddr, port string) {
 		case proto == "redis":
 			checkup(host, port)
 			go RedisWorker(tasks)
+		case proto == "mangoDB":
+			checkup(host, port)
+			go MangoWorker(tasks)
 		default:
 			return
 		}
@@ -94,6 +95,7 @@ func Taskrun(proto string, tasknum int, hostaddr, port string) {
 					Username: U.Username,
 					Password: P.Password,
 					Port:     intport,
+					Database: database,
 				}
 				tasks <- task
 			}
@@ -279,6 +281,24 @@ func RedisWorker(tasks chan Workdist) {
 		Ret := tool.RedisConnect(task.Password, host, task.Port)
 		if Ret == "true" {
 			log.Print("检测到Redis服务弱口令:"," 密码: ", task.Password)
+			os.Exit(1)
+		}
+	}
+}
+
+
+func MangoWorker(tasks chan Workdist) {
+	defer wg.Done()
+	for {
+		task, ok := <-tasks
+		if !ok {
+			//log.Print("通道关闭")
+			return
+		}
+		log.Print("检测Mango服务弱口令：密码: ", task.Password)
+		Ret := tool.LoginMango(host, task.Username, task.Password, task.Port,"")
+		if Ret == "Success" {
+			log.Print("检测到Mango服务弱口令:"," 密码: ", task.Password)
 			os.Exit(1)
 		}
 	}

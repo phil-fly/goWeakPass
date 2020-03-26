@@ -8,13 +8,14 @@
 |1|ftp|
 |2|telnet|
 |3|ssh|
-|4|Mysql|
-|5|Smtp|
-|6|Smb|
-|7|Mssql|
-|8|Postgres|
-|9|Hive|
-|10|Redis|
+|4|mysql|
+|5|smtp|
+|6|smb|
+|7|mssql|
+|8|postgres|
+|9|hive|
+|10|redis|
+|11|mangoDB|
 
 
 ## 使用方式
@@ -24,6 +25,8 @@
 Usage of ./goWeakPass:
   -conf string
     	Weak password detection confpath (default "conf.ini")
+  -database string
+    	Weak password database name (default "admin")
   -host string
     	Weak password detection hostaddr
   -p int
@@ -46,6 +49,7 @@ linux:(例) `./weakpass -host 10.10.10.111 -proto ssh -port 22 -p 50 -conf ../co
     -port   指定服务端口
     -p      指定并发检测线程数量
     -conf   指定配置文件路经
+    -database 指定扫描的数据库名
     
 ## 字典数据库
 ### 账户字典：

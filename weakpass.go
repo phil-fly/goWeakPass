@@ -12,12 +12,13 @@ var hostaddr = flag.String("host", "", "Weak password detection hostaddr")
 var port = flag.String("port", "", "Weak password detection port")
 var tasknum = flag.Int("p", 1, "Weak password detection Number of threads")
 var confpath = flag.String("conf", "conf.ini", "Weak password detection confpath")
+var database = flag.String("database", "admin", "Weak password database name")
 
 func main() {
 	flag.Parse()
 	check()
 	work.Taskinit(*confpath)
-	work.Taskrun(*proto, *tasknum, *hostaddr, *port)
+	work.Taskrun(*proto, *tasknum, *hostaddr, *port,*database)
 	log.Print("未检测到该服务弱口令，请再次检查确认或补充字典！")
 }
 
