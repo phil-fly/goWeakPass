@@ -1,26 +1,22 @@
 package tool
 
 import (
-	"database/sql"
-	"fmt"
-	//_ "github.com/denisenkom/go-mssqldb"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mssql"
 	"log"
 )
 
 func Loginmssql(host, username, password string, port int) string {
+	db, err := gorm.Open("mssql", "sqlserver://"+username+":"+password+"@"+host+":"+"1433"+"?database=comsharp-cms")
 
-	dataSourceName := fmt.Sprintf("server=%v;port=%v;user id=%v;password=%v;database=%v", host,
-		port, username, password, "master")
-	db, err := sql.Open("mssql", dataSourceName)
+//	dataSourceName := fmt.Sprintf("server=%s;port=%d;database=%s;trusted_connection=yes;", host,
+//		port, "sa", password,)
 	if err != nil {
-		log.Print("用户名：", username, "    密码: ", password, "      ", "false")
+		log.Print("用户名：", username, "    密码: ", password, "     ", "false", err.Error())
 		return "false"
-	}
-	if err := db.Ping(); err == nil {
+	}else{
 		log.Print("用户名：", username, "    密码: ", password, "      ", "true")
 		defer db.Close()
 		return "true"
 	}
-	log.Print("用户名：", username, "    密码: ", password, "      ", "false")
-	return "false"
 }

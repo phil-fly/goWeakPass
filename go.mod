@@ -4,9 +4,13 @@ go 1.13
 
 require (
 	github.com/dazheng/gohive v0.0.0-20190904024313-b1810177c8f2
+	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc
 	github.com/garyburd/redigo v1.6.0
+	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/jinzhu/gorm v1.9.12
 	github.com/lib/pq v1.3.0
+	github.com/mattn/go-adodb v0.0.1
 	github.com/smallfish/ftp v0.0.0-20160801035311-6d094f003ac5
 	github.com/stacktitan/smb v0.0.0-20190531122847-da9a425dceb8
 	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59

@@ -10,7 +10,7 @@ import (
 var proto = flag.String("proto", "", "Weak password detection protos (ssh/telnet)")
 var hostaddr = flag.String("host", "", "Weak password detection hostaddr")
 var port = flag.String("port", "", "Weak password detection port")
-var tasknum = flag.Int("p", 1, "Weak password detection Number of threads")
+var tasknum = flag.Int("t", 1, "Weak password detection Number of threads")
 var confpath = flag.String("conf", "conf.ini", "Weak password detection confpath")
 var database = flag.String("database", "admin", "Weak password database name")
 
