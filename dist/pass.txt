@@ -3,13 +3,3 @@
 pass
 root222
 admin111
-Admin12345
-admin!@#45
-abc123!@
-qweasd123
-123456
-toortoor
-toor
-Admin12345.136
-admin
-root

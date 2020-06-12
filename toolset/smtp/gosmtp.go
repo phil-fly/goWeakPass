@@ -1,14 +1,23 @@
-package tool
+package smtp
 
 import (
+	"fmt"
+	"goWeakPass/define"
 	"gopkg.in/gomail.v2"
-	"strconv"
+	"os"
 )
 
-func Checksmtp(host, username, password string, smtpport int) error {
+func LoginSmtp(value interface{}) bool {
+	switch value.(type) {
+	case define.ServiceInfo :break
+	default :
+		fmt.Println("程序错误")
+		os.Exit(-1)
+	}
+	config := value.(define.ServiceInfo)
 
 	mailTo := []string{
-		username, //实验邮件接收人为自己本身
+		config.UserName, //实验邮件接收人为自己本身
 	}
 
 	subject := "弱口令测试"
@@ -16,13 +25,11 @@ func Checksmtp(host, username, password string, smtpport int) error {
 	body := ""
 
 	mailConn := map[string]string{
-		"user": username,
-		"pass": password,
-		"host": host,                   //"smtp.qq.com",
-		"port": strconv.Itoa(smtpport), //"465",
+		"user": config.UserName,
+		"pass": config.PassWord,
+		"host": config.Host,                   //"smtp.qq.com",
+		"port": config.Port, //"465",
 	}
-
-	port, _ := strconv.Atoi(mailConn["port"]) //转换端口类型为int
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", "weakpass"+"<"+mailConn["user"]+">") //这种方式可以添加别名，即“XD Game”， 也可以直接用<code>m.SetHeader("From",mailConn["user"])</code> 读者可以自行实验下效果
@@ -30,12 +37,13 @@ func Checksmtp(host, username, password string, smtpport int) error {
 	m.SetHeader("Subject", subject)                          //设置邮件主题
 	m.SetBody("text/html", body)                             //设置邮件正文
 
-	d := gomail.NewDialer(mailConn["host"], port, mailConn["user"], mailConn["pass"])
+	d := gomail.NewDialer(mailConn["host"], config.PortInt, mailConn["user"], mailConn["pass"])
 
 	err := d.DialAndSend(m)
 	if err != nil {
-		return err
+		return false
 	}
-	return err
+	define.Output(value)
+	return true
 
 }

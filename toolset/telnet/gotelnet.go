@@ -1,10 +1,11 @@
-package tool
+package telnet
 
 import (
 	"fmt"
+	"goWeakPass/define"
 	"log"
 	"net"
-	"strconv"
+	"os"
 	"strings"
 	"time"
 )
@@ -17,16 +18,25 @@ type TelnetClient struct {
 	Password         string
 }
 
-func Telnet_Creat(host string, usr string, pass string, port int) (bool, error) {
+func LoginTelnet(value interface{}) bool {
+	switch value.(type) {
+	case define.ServiceInfo :break
+	default :
+		fmt.Println("程序错误")
+		os.Exit(-1)
+	}
+	config := value.(define.ServiceInfo)
 	telnetClientObj := new(TelnetClient)
-	telnetClientObj.IP = host
-	telnetClientObj.Port = strconv.Itoa(port)
+	telnetClientObj.IP = config.Host
+	telnetClientObj.Port = config.Port
 	telnetClientObj.IsAuthentication = true
-	telnetClientObj.UserName = usr
-	telnetClientObj.Password = pass
-	ret, err := telnetClientObj.Telnet(30)
-
-	return ret, err
+	telnetClientObj.UserName = config.UserName
+	telnetClientObj.Password = config.PassWord
+	ret, _ := telnetClientObj.Telnet(30)
+	if ret {
+		define.Output(value)
+	}
+	return ret
 }
 
 func (this *TelnetClient) Telnet(timeout int) (bool, error) {
@@ -132,6 +142,5 @@ func (this *TelnetClient) telnetProtocolHandshake(conn net.Conn) bool {
 		log.Print("pkg: model, func: telnetProtocolHandshake7, method: conn.Read, errInfo:", err)
 		return false
 	}
-	fmt.Print(n)
 	return true
 }

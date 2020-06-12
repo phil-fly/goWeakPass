@@ -1,11 +1,12 @@
-package tool
+package sshLogin
 
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"goWeakPass/define"
 	"golang.org/x/crypto/ssh"
-	"log"
 	"net"
+	"os"
 	"time"
 )
 const chacha20Poly1305ID = "chacha20-poly1305@openssh.com"
@@ -26,7 +27,14 @@ var supportedCiphers = []string{
 	"aes128-cbc",
 }
 
-func SshConnect(user, password, host string, port int) (string, error) {
+func LoginSsh(value interface{}) bool {
+	switch value.(type) {
+	case define.ServiceInfo :break
+	default :
+		fmt.Println("程序错误")
+		os.Exit(-1)
+	}
+	config := value.(define.ServiceInfo)
 	var (
 		auth         []ssh.AuthMethod
 		addr         string
@@ -37,10 +45,10 @@ func SshConnect(user, password, host string, port int) (string, error) {
 	)
 	// get auth method
 	auth = make([]ssh.AuthMethod, 0)
-	auth = append(auth, ssh.Password(password))
+	auth = append(auth, ssh.Password(config.PassWord))
 
 	clientConfig = &ssh.ClientConfig{
-		User:    user,
+		User:    config.UserName,
 		Auth:    auth,
 		Timeout: 6 * time.Second,
 		//2019.6.18  golang默认配置加密方式不包括aes128-cbc  连接交换机需要使用aes128-cbc
@@ -53,18 +61,19 @@ func SshConnect(user, password, host string, port int) (string, error) {
 	}
 
 	// connet to ssh
-	addr = fmt.Sprintf("%s:%d", host, port)
+	addr = fmt.Sprintf("%s:%d", config.Host, config.PortInt)
 
 	if client, err = ssh.Dial("tcp", addr, clientConfig); err != nil {
-		log.Print("用户名：", user, "    密码: ", password, "      ", err.Error())
-		return "", err
+		//log.Print("用户名：", user, "    密码: ", password, "      ", err.Error())
+		return false
 	}
 
 	// create session
 	if session, err = client.NewSession(); err != nil {
-		log.Print("用户名：", user, "    密码: ", password, "      ", err.Error())
-		return "", err
+		//log.Print("用户名：", user, "    密码: ", password, "      ", err.Error())
+		return false
 	}
 	session.Close()
-	return "ok", nil
+	define.Output(value)
+	return true
 }

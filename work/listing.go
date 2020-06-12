@@ -1,11 +1,14 @@
 package work
 
 import (
-	"goWeakPass/tool"
+	"fmt"
+	"goWeakPass/define"
+	"goWeakPass/toolset"
 	"log"
 	"net"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -14,6 +17,7 @@ type Workdist struct {
 	Password string
 	Port     int
 	Database string
+	Server	 string
 }
 
 const (
@@ -43,59 +47,32 @@ func checkup(hostaddr, port string) {
 }
 
 func Taskrun(proto string, tasknum int, hostaddr, port ,database string) {
+	Server,ok := toolset.ManageServer.GetServer(strings.ToUpper(proto))
+	if !ok {
+		fmt.Println("服务不存在!")
+		os.Exit(1)
+	}
+	checkup(host, port)
+
 	host = hostaddr
-	tasks := make(chan Workdist, taskload)
+	tasks := make(chan define.ServiceInfo, taskload)
 	wg.Add(tasknum)
 
 	for gr := 1; gr <= tasknum; gr++ {
-		switch {
-		case proto == "ssh":
-			checkup(host, port)
-			go sshWorker(tasks)
-		case proto == "telnet":
-			checkup(host, port)
-			go telnetWorker(tasks)
-		case proto == "ftp":
-			checkup(host, port)
-			go ftpWorker(tasks)
-		case proto == "mysql":
-			checkup(host, port)
-			go mysqlWorker(tasks)
-		case proto == "smtp":
-			checkup(host, port)
-			go smtpWorker(tasks)
-		case proto == "smb":
-			checkup(host, port)
-			go smbWorker(tasks)
-		case proto == "mssql": // 1433
-			checkup(host, port)
-			go mssqlWorker(tasks)
-		case proto == "plugins":
-			checkup(host, port)
-			go PostgresWorker(tasks)
-		case proto == "hive":
-			checkup(host, port)
-			go HiveWorker(tasks)
-		case proto == "redis":
-			checkup(host, port)
-			go RedisWorker(tasks)
-		case proto == "mangoDB":
-			checkup(host, port)
-			go MangoWorker(tasks)
-		default:
-			return
-		}
+		go ServerWorker(tasks,Server)
 	}
 	intport, _ := strconv.Atoi(port)
 	if MysqlConf.Enabled {
 		for _, U := range userlist_sql {
 			for _, P := range passlist_sql {
 
-				task := Workdist{
-					Username: U.Username,
-					Password: P.Password,
-					Port:     intport,
-					Database: database,
+				task := define.ServiceInfo{
+					Host: hostaddr,
+					Port:     port,
+					PortInt: intport,
+					UserName: U.Username,
+					PassWord: P.Password,
+					DbName: database,
 				}
 				tasks <- task
 			}
@@ -105,11 +82,13 @@ func Taskrun(proto string, tasknum int, hostaddr, port ,database string) {
 	if FileConf.Enabled {
 		for _, U := range userlist_file {
 			for _, P := range passlist_file {
-
-				task := Workdist{
-					Username: U.Username,
-					Password: P.Password,
-					Port:     intport,
+				task := define.ServiceInfo{
+					Host: hostaddr,
+					Port:     port,
+					PortInt: intport,
+					UserName: U.Username,
+					PassWord: P.Password,
+					DbName: database,
 				}
 				tasks <- task
 			}
@@ -120,26 +99,7 @@ func Taskrun(proto string, tasknum int, hostaddr, port ,database string) {
 	wg.Wait()
 }
 
-func sshWorker(tasks chan Workdist) {
-	defer wg.Done()
-
-	for {
-		task, ok := <-tasks
-		if !ok {
-			//log.Print("通道关闭")
-			return
-		}
-		log.Print("检测ssh服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-		_, err := tool.SshConnect(task.Username, task.Password, host, task.Port)
-		if err == nil {
-			log.Print("检测到ssh服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-			os.Exit(1)
-		}
-	}
-
-}
-
-func telnetWorker(tasks chan Workdist) {
+func ServerWorker(tasks chan define.ServiceInfo,Server interface{}){
 	defer wg.Done()
 	for {
 		task, ok := <-tasks
@@ -147,160 +107,7 @@ func telnetWorker(tasks chan Workdist) {
 			//log.Print("通道关闭")
 			return
 		}
-		ret, _ := tool.Telnet_Creat(host, task.Username, task.Password, task.Port)
-		if ret == true {
-			log.Print("检测到telnet服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-			os.Exit(1)
-		}
-	}
-}
-
-func ftpWorker(tasks chan Workdist) {
-	defer wg.Done()
-	for {
-		task, ok := <-tasks
-		if !ok {
-			//log.Print("通道关闭")
-			return
-		}
-		ret := tool.LoginFtp(host, task.Username, task.Password, task.Port)
-		if ret == "230" {
-			log.Print("检测到ftp服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-			os.Exit(1)
-		}
-	}
-}
-
-func mysqlWorker(tasks chan Workdist) {
-	defer wg.Done()
-	for {
-		task, ok := <-tasks
-		if !ok {
-			//log.Print("通道关闭")
-			return
-		}
-		ret := tool.Loginmysql(host, task.Username, task.Password, task.Port)
-		if ret == "ok" {
-			log.Print("检测到mysql服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-			os.Exit(1)
-		}
-	}
-}
-func mssqlWorker(tasks chan Workdist) {
-	defer wg.Done()
-	for {
-		task, ok := <-tasks
-		if !ok {
-			//log.Print("通道关闭")
-			return
-		}
-		ret := tool.Loginmssql(host, task.Username, task.Password, task.Port)
-		if ret == "true" {
-			log.Print("检测到mysql服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-			os.Exit(1)
-		}
-	}
-}
-
-func HiveWorker(tasks chan Workdist) {
-	defer wg.Done()
-	for {
-		task, ok := <-tasks
-		if !ok {
-			//log.Print("通道关闭")
-			return
-		}
-		ret := tool.LoginHive(host, task.Username, task.Password, task.Port)
-		if ret == "true" {
-			log.Print("检测到Hive服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-			os.Exit(1)
-		}
-	}
-}
-
-func PostgresWorker(tasks chan Workdist) {
-	defer wg.Done()
-	for {
-		task, ok := <-tasks
-		if !ok {
-			//log.Print("通道关闭")
-			return
-		}
-		ret := tool.LoginPostgres(host, task.Username, task.Password, task.Port)
-		if ret == "true" {
-			log.Print("检测到Postgres服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-			os.Exit(1)
-		}
-	}
-}
-
-//暂不支持ssl
-func smtpWorker(tasks chan Workdist) {
-	defer wg.Done()
-	for {
-		task, ok := <-tasks
-		if !ok {
-			//log.Print("通道关闭")
-			return
-		}
-		err := tool.Checksmtp(host, task.Username, task.Password, task.Port)
-		if err == nil {
-			log.Print("检测到smtp 服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-			os.Exit(1)
-		}
-	}
-}
-
-//暂不支持ssl
-func smbWorker(tasks chan Workdist) {
-	defer wg.Done()
-	for {
-		task, ok := <-tasks
-		if !ok {
-			//log.Print("通道关闭")
-			return
-		}
-		log.Print("检测SMB服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-		Ret, err := tool.SmbConnect(task.Username, task.Password, host, task.Port)
-		if err == nil && Ret == "true" {
-			log.Print("检测到SMB服务弱口令：    用户名: ", task.Username, "   密码: ", task.Password)
-			os.Exit(1)
-		}
-	}
-}
-
-func RedisWorker(tasks chan Workdist) {
-	defer wg.Done()
-	for {
-		task, ok := <-tasks
-		if !ok {
-			//log.Print("通道关闭")
-			return
-		}
-		log.Print("检测Redis服务弱口令：密码: ", task.Password)
-		Ret := tool.RedisConnect(task.Password, host, task.Port)
-		if Ret == "true" {
-			log.Print("检测到Redis服务弱口令:"," 密码: ", task.Password)
-			os.Exit(1)
-		}
-	}
-}
-
-
-func MangoWorker(tasks chan Workdist) {
-	defer wg.Done()
-	for {
-		task, ok := <-tasks
-		if !ok {
-			//log.Print("通道关闭")
-			return
-		}
-		log.Print("检测Mango服务弱口令：密码: ", task.Password)
-		Ret := tool.LoginMango(host, task.Username, task.Password, task.Port,"")
-		if Ret == "Success" {
-			log.Print("检测到Mango服务弱口令:"," 密码: ", task.Password)
-			os.Exit(1)
-		}
+		toolset.ManageServer.Call(Server,task)
 	}
 }
 
