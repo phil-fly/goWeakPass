@@ -34,6 +34,7 @@ func Taskinit(file string) {
 }
 func checkError(err error) {
 	if err != nil {
+		log.Println("err:",err)
 		log.Print("检测到主机没有开启该服务，检查退出！")
 		os.Exit(1)
 	}
@@ -41,6 +42,7 @@ func checkError(err error) {
 
 func checkup(hostaddr, port string) {
 	address := hostaddr + ":" + port
+	log.Println("目标服务:",address)
 	conn, err := net.Dial("tcp", address)
 	checkError(err)
 	conn.Close()
@@ -52,9 +54,8 @@ func Taskrun(proto string, tasknum int, hostaddr, port ,database string) {
 		fmt.Println("服务不存在!")
 		os.Exit(1)
 	}
-	checkup(host, port)
-
 	host = hostaddr
+	checkup(host, port)
 	tasks := make(chan define.ServiceInfo, taskload)
 	wg.Add(tasknum)
 

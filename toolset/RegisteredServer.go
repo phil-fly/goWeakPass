@@ -6,6 +6,7 @@ import (
 	"goWeakPass/toolset/mangodb"
 	"goWeakPass/toolset/mysql"
 	"goWeakPass/toolset/postgres"
+	"goWeakPass/toolset/rdp"
 	"goWeakPass/toolset/redis"
 	smblogin "goWeakPass/toolset/smb"
 	"goWeakPass/toolset/smtp"
@@ -25,4 +26,6 @@ func init(){
 	ManageServer.RegisteredServer("SMTP",smtp.LoginSmtp)
 	ManageServer.RegisteredServer("SSH",sshLogin.LoginSsh)
 	ManageServer.RegisteredServer("TELNET",telnet.LoginTelnet)
+	ManageServer.RegisteredServer("RDP",rdp.LoginRdp)
+
 }

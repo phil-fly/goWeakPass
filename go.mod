@@ -6,6 +6,7 @@ require (
 	github.com/dazheng/gohive v0.0.0-20190904024313-b1810177c8f2
 	github.com/garyburd/redigo v1.6.0
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/icodeface/grdp v0.0.0-20200414055757-e0008b0b5cb2
 	github.com/lib/pq v1.3.0
 	github.com/smallfish/ftp v0.0.0-20160801035311-6d094f003ac5
 	github.com/stacktitan/smb v0.0.0-20190531122847-da9a425dceb8

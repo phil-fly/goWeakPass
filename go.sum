@@ -16,6 +16,10 @@ github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LB
 github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe h1:lXe2qZdvpiX5WZkZR4hgp4KJVfY3nMkvmwbVkpv1rVY=
 github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe/go.mod h1:8vg3r2VgvsThLBIFL93Qb5yWzgyZWhEmBwUJWevAkK0=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
+github.com/icodeface/grdp v0.0.0-20200414055757-e0008b0b5cb2 h1:ygCqbylErDVlQ3ykPaa8lmfrbPQoiGcOlSgC+Ej8VgI=
+github.com/icodeface/grdp v0.0.0-20200414055757-e0008b0b5cb2/go.mod h1:AENknrjjTG+yAL3EFNMDxSALP140yz4RXJOqIwGulig=
+github.com/icodeface/tls v0.0.0-20190904082144-a3e1fe30543e h1:3V+yaobzgt0CfQTbMoTEwDY5qbvrVnRgr96JBZ00Vhw=
+github.com/icodeface/tls v0.0.0-20190904082144-a3e1fe30543e/go.mod h1:VJNHW2GxCtQP/IQtXykBIPBV8maPJ/dHWirVTwm9GwY=
 github.com/jinzhu/gorm v1.9.12 h1:Drgk1clyWT9t9ERbzHza6Mj/8FY/CqMyVzOiHviMo6Q=
 github.com/jinzhu/gorm v1.9.12/go.mod h1:vhTjlKSJUTWNtcbQtrMBFCxy7eXTzeCAzfL5fBZT/Qs=
 github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD/E=
@@ -24,6 +28,8 @@ github.com/jinzhu/now v1.0.1/go.mod h1:d3SSVoowX0Lcu0IBviAWJpolVfI5UJVZZ7cO71lE/
 github.com/lib/pq v1.1.1/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/lib/pq v1.3.0 h1:/qkRGz8zljWiDcFvgpwUpwIAPu3r07TDvs3Rws+o/pU=
 github.com/lib/pq v1.3.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
+github.com/lunixbochs/struc v0.0.0-20190326164542-a9e4041416c2 h1:xvBq0/ARZLqmB57m6jds017I+KtXPcsKBHv6dUUac4A=
+github.com/lunixbochs/struc v0.0.0-20190326164542-a9e4041416c2/go.mod h1:iOJu9pApjjmEmNq7PqlA5R9mDu/HMF5EM3llWKX/TyA=
 github.com/mattn/go-adodb v0.0.1 h1:g/pk3V8m/WFX2IQRI58wAC24OQUFFXEiNsvs7dQ1WKg=
 github.com/mattn/go-adodb v0.0.1/go.mod h1:jaSTRde4bohMuQgYQPxW3xRTPtX/cZKyxPrFVseJULo=
 github.com/mattn/go-sqlite3 v2.0.1+incompatible/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
@@ -33,6 +39,7 @@ github.com/stacktitan/smb v0.0.0-20190531122847-da9a425dceb8 h1:GVFkBBJAEO3CpzIY
 github.com/stacktitan/smb v0.0.0-20190531122847-da9a425dceb8/go.mod h1:phLSETqH/UJsBtwDVBxSfJKwwkbJcGyy2Q/h4k+bmww=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
+golang.org/x/crypto v0.0.0-20190909091759-094676da4a83/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=
 golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59 h1:3zb4D3T4G8jdExgVU/95+vQXfpEPiMdCaZgmGVxjNHM=
 golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
