@@ -11,11 +11,12 @@
 |4|mysql|
 |5|smtp|
 |6|smb|
-|7|mssql|
+|7|mssql(支持差)|
 |8|postgres|
 |9|hive|
 |10|redis|
 |11|mangoDB|
+|12|rdp(暂不支持NLA认证)|
 
 
 ## 使用方式
