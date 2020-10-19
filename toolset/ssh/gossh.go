@@ -18,13 +18,11 @@ const (
 
 var supportedCiphers = []string{
 	"aes128-ctr", "aes192-ctr", "aes256-ctr",
-	"aes128-gcm@openssh.com",
 	chacha20Poly1305ID,
 	"arcfour256", "arcfour128", "arcfour",
 	aes128cbcID,
 	tripledescbcID,
 	gcmCipherID,
-	"aes128-cbc",
 }
 
 func LoginSsh(value interface{}) bool {
