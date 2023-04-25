@@ -3,7 +3,6 @@ package rdp
 import (
 	"fmt"
 	"goWeakPass/define"
-	"log"
 	"os"
 	"github.com/icodeface/grdp"
 	"github.com/icodeface/grdp/glog"
